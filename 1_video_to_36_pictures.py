@@ -5,19 +5,19 @@ import subprocess
 import glob
 
 # 替换为你的视频文件路径, 必须和video_path字符串相同
-video_path:str = "i.mp4" # 可以使用几乎所有视频格式, 包括jpg, gif等动图格式
+video_path:str = "test2.mp4" # 可以使用几乎所有视频格式, 包括jpg, gif等动图格式
 
 # 截取视频从start_time秒到end_time秒的部分, 一般 3.6 秒左右刚好
 # 之所以建议 3.6 是因为每 0.1 秒播放一帧, 而最大总帧数为 36
 # 如果end_time大于总时长，则等价于总时长
-start_time:float = 0
-end_time:float = 1
+start_time:float = 2.8
+end_time:float = 5.7
 
 # 是否旋转
 # 0 是不旋转，1 是顺时针 90 度，2 是逆时针 90 度
-transpose:int = 0
+transpose:int = 1
 # 是否连续转两次, 0 是 False, 1 是 True (用于实现 180 度旋转)
-rotate_time:int = 1
+rotate_double:int = 1
 
 # 需要自行安装FFMPEG
 # FFMPEG介绍: FFMPEG 是一个开源的多媒体处理工具
@@ -30,7 +30,7 @@ ffprobe_path = "ffprobe" # 可以使用文件路径替代
 num_frames:int = 36  # 总帧数
 
 # 是否保留临时文件
-keep_temp_file:bool = False
+keep_temp_file:bool = True
 
 # 输出图片名称格式
 # out_image_format[0] 是前缀
@@ -48,9 +48,10 @@ temp_scale_video:str = "temp_scale.mp4"  # 临时放缩视频
 temp_frames_folder:str = "temp_frames"  # 临时帧文件夹
 temp_frame_format:str = "frame_%04d" + out_image_format[1]  # 临时帧文件
 
+# 如果想要长宽比不变的话，可以把 height 可以选择
 width: int = 160  # 像素宽度 不建议修改
-height: int = 80  # 像素长度 不建议修
-
+# height: int = 80  # 像素长度 不建议修改
+height = -1  # 不建议修改 但可以选择
 
 def get_video_duration(_video_path) -> float:
     """获取视频的总时长（秒）"""
@@ -70,6 +71,9 @@ def get_video_duration(_video_path) -> float:
     try:
         result = subprocess.run(command, capture_output=True, text=True)
         return float(result.stdout.strip())
+    except ValueError:
+        print("\033[31mPlease Check You Video File")
+        exit()
     except FileNotFoundError:
         print("PLEASE INSTALL FFMPEG")
         print("GOTO FFMPEG DOWNLOAD WEB: https://ffmpeg.org/download.html")
@@ -123,7 +127,7 @@ def cut_video_rotate(_video_path: str, _start_time: float, _end_time: float, _wi
     if transpose == 0:
         return temp_scale_video
     else:
-        if rotate_time == 0:
+        if rotate_double == 0:
             transpose_string = f"transpose={transpose}"
         else:
             transpose_string = f"transpose={transpose}, transpose={transpose}"
@@ -215,7 +219,7 @@ if __name__ == '__main__':
     if args.r is not None:
         transpose = int(args.r)
     if args.rr is not None:
-        rotate_time = int(args.rr)
+        rotate_double = int(args.rr)
 
     # 防止输出阻塞, 先删除同名文件
     if os.path.exists(temp_cut_video):

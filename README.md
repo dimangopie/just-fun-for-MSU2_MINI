@@ -44,13 +44,54 @@ ffprobe_path = "ffprobe"  # 默认ffprobe路径
 * **源码配置修改方法**
 * 除了通过命令行参数进行配置外，您还可以直接在1_video_to_36_pictures.py文件源码中修改以下配置项以保存您的个性化设置：
 ```python
-video_path:str = "i.mp4"  # 默认视频文件路径
-start_time:float = 10     # 默认截取视频的起始时间（秒）
-end_time:float = 1000000  # 默认截取视频的结束时间（秒）
-transpose:int = 1         # 默认旋转方式：0（不旋转），1（顺时针90°），2（逆时针90°）
-rotate_time:int = 0       # 默认连续旋转次数（用于实现180°旋转）
-ffmpeg_path = "ffmpeg"    # 默认FFMPEG路径
-ffprobe_path = "ffprobe"  # 默认ffprobe路径
+# 替换为你的视频文件路径, 必须和video_path字符串相同
+video_path:str = "i.mp4" # 可以使用几乎所有视频格式, 包括jpg, gif等动图格式
+
+# 截取视频从start_time秒到end_time秒的部分, 一般 3.6 秒左右刚好
+# 之所以建议 3.6 是因为每 0.1 秒播放一帧, 而最大总帧数为 36
+# 如果end_time大于总时长，则等价于总时长
+start_time:float = 5.6
+end_time:float = 8
+
+# 是否旋转
+# 0 是不旋转，1 是顺时针 90 度，2 是逆时针 90 度
+transpose:int = 1
+# 是否连续转两次, 0 是 False, 1 是 True (用于实现 180 度旋转)
+rotate_double:int = 1
+
+# 需要自行安装FFMPEG
+# FFMPEG介绍: FFMPEG 是一个开源的多媒体处理工具
+# 如果不愿意把ffmpeg添加到系统环境变量, 可以使用ffmpeg的文件路径
+ffmpeg_path = "ffmpeg" # 可以使用文件路径替代
+# ffprobe 是 ffmpeg 的一个子模块, 也可以使用ffprobe的文件路径
+ffprobe_path = "ffprobe" # 可以使用文件路径替代
+
+# 以下为不建议修改的配置---------------------------------------------------------------------------------
+num_frames:int = 36  # 总帧数
+
+# 是否保留临时文件
+keep_temp_file:bool = False
+
+# 输出图片名称格式
+# out_image_format[0] 是前缀
+# out_image_format[1] 是后缀, 要带上 '.'
+# 可以使用几乎所有图片格式
+out_image_format = ["A", ".png"]
+
+# 输出图片的文件夹路径, 可以不管, 程序会自行创建该文件
+output_folder:str = video_path + "_to_36_pictures"
+
+# 运行前必须保证与临时文件同名的文件为不重要的文件
+temp_cut_video:str = "tmp_cut.mp4"  # 临时截取视频
+temp_rotate_video:str = "tmp_rotate.mp4"  # 临时旋转视频
+temp_scale_video:str = "temp_scale.mp4"  # 临时放缩视频
+temp_frames_folder:str = "temp_frames"  # 临时帧文件夹
+temp_frame_format:str = "frame_%04d" + out_image_format[1]  # 临时帧文件
+
+# 如果想要长宽比不变的话，可以把 height 可以选择
+width: int = 160  # 像素宽度 不建议修改
+# height: int = 80  # 像素长度 不建议修改
+height = -1  # 不建议修改 但可以选择
 ```
 * **输出结果** ：运行成功后，会在脚本所在目录下的指定目录生成 36 张图片，这些图片可用于 MSU2 MINI 的烧录过程。
 
