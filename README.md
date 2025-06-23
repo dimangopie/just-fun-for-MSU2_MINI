@@ -24,8 +24,10 @@
 ```python 1_video_to_36_pictures.py -i example_video.mp4```
 
 * 如果未将 FFMPEG 添加到环境变量，则需要指定 FFMPEG 的完整路径来运行，例如：
-```bash
-python 1_video_to_36_pictures.py -i example_video.mp4
+* 在1_video_to_36_pictures.py文件源码中修改以下配置项
+```python
+ffmpeg_path = "ffmpeg"    # 默认FFMPEG路径
+ffprobe_path = "ffprobe"  # 默认ffprobe路径
 ```
 * **参数说明** ：
     可以    
