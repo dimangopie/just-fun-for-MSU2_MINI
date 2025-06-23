@@ -10,14 +10,14 @@ video_path:str = "i.mp4" # 可以使用几乎所有视频格式, 包括jpg, gif�
 # 截取视频从start_time秒到end_time秒的部分, 一般 3.6 秒左右刚好
 # 之所以建议 3.6 是因为每 0.1 秒播放一帧, 而最大总帧数为 36
 # 如果end_time大于总时长，则等价于总时长
-start_time:float = 10
-end_time:float = 1000000
+start_time:float = 0
+end_time:float = 1
 
 # 是否旋转
 # 0 是不旋转，1 是顺时针 90 度，2 是逆时针 90 度
-transpose:int = 1
-# 是否连续转两次 (用于实现 180 度旋转)
-rotate_time:int = 0
+transpose:int = 0
+# 是否连续转两次, 0 是 False, 1 是 True (用于实现 180 度旋转)
+rotate_time:int = 1
 
 # 需要自行安装FFMPEG
 # FFMPEG介绍: FFMPEG 是一个开源的多媒体处理工具
@@ -64,7 +64,7 @@ def get_video_duration(_video_path) -> float:
         "default=noprint_wrappers=1:nokey=1",
         _video_path
     ]
-    print("$", end="")
+    
     [print(i, end=" ") for i in command]
     print()
     try:
@@ -90,7 +90,7 @@ def cut_video_rotate(_video_path: str, _start_time: float, _end_time: float, _wi
         str(_end_time),
         temp_cut_video
     ]
-    print("$", end="")
+    
     [print(i, end=" ") for i in command]
     print()
     try:
@@ -110,7 +110,7 @@ def cut_video_rotate(_video_path: str, _start_time: float, _end_time: float, _wi
         "0",
         temp_scale_video
     ]
-    print("$", end="")
+    
     [print(i, end=" ") for i in command]
     print()
     try:
@@ -120,22 +120,27 @@ def cut_video_rotate(_video_path: str, _start_time: float, _end_time: float, _wi
         print("GOTO FFMPEG DOWNLOAD WEB: https://ffmpeg.org/download.html")
         exit()
     # 旋转视频
-    if transpose == 0 :
+    if transpose == 0:
         return temp_scale_video
     else:
+        if rotate_time == 0:
+            transpose_string = f"transpose={transpose}"
+        else:
+            transpose_string = f"transpose={transpose}, transpose={transpose}"
+            
         command = [
             f"{ffmpeg_path}",
             "-i",
             temp_scale_video,
             "-vf",
-            f"transpose={transpose}" + f", transpose={transpose}" * rotate_time,
+            transpose_string,
             "-codec:v",
             "libx264",
             "-codec:a",
             "copy",
             temp_rotate_video
         ]
-        print("$", end="")
+        
         [print(i, end=" ") for i in command]
         print()
 
@@ -162,7 +167,7 @@ def extract_frames(_video_path, _output_folder, _num_frames=36):
         _video_path,
         f"{temp_frames_folder}/{temp_frame_format}"
     ]
-    print("$", end="")
+    
     [print(i, end=" ") for i in command]
     print()
     try:
@@ -180,11 +185,11 @@ def extract_frames(_video_path, _output_folder, _num_frames=36):
         return
     # 计算需要提取的帧索引
     frame_indices = [int(total_frames * (i / (_num_frames + 1))) for i in range(1, _num_frames + 1)]
-    # 确保总共有37帧
-    frame_indices = frame_indices[:_num_frames]
-
+    [print(i, end=" ") for i in frame_indices]
+    print()
+    [print(frame_indices[i] - frame_indices[i - 1], end=" ") for i in range(1, len(frame_indices))]
+    print()
     # 提取并处理帧
-    print("Processing frames...")
     for i, index in enumerate(frame_indices, 0):
         input_path = jpg_files[index]
         output_path = os.path.join(_output_folder, out_image_format[0] + str(i) + out_image_format[1])
@@ -241,7 +246,6 @@ if __name__ == '__main__':
     extract_frames(output_file, output_folder, _num_frames=num_frames)
     print("Start Time: ", start_time, "s", sep="")
     print("End Time: ", end_time, "s", sep="")
-    print("Extracting frames from video...")
 
     if not keep_temp_file:
         if os.path.exists(temp_cut_video):
