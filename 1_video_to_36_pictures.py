@@ -1,3 +1,4 @@
+import argparse
 import shutil
 import os
 import subprocess
@@ -16,7 +17,7 @@ end_time:float = 1000000
 # 0 是不旋转，1 是顺时针 90 度，2 是逆时针 90 度
 transpose:int = 1
 # 是否连续转两次 (用于实现 180 度旋转)
-double:bool = True
+rotate_time:int = 0
 
 # 需要自行安装FFMPEG
 # FFMPEG介绍: FFMPEG 是一个开源的多媒体处理工具
@@ -127,7 +128,7 @@ def cut_video_rotate(_video_path: str, _start_time: float, _end_time: float, _wi
             "-i",
             temp_scale_video,
             "-vf",
-            f"transpose={transpose}" + f", transpose={transpose}" * double,
+            f"transpose={transpose}" + f", transpose={transpose}" * rotate_time,
             "-codec:v",
             "libx264",
             "-codec:a",
@@ -178,42 +179,9 @@ def extract_frames(_video_path, _output_folder, _num_frames=36):
         print("提取帧失败")
         return
     # 计算需要提取的帧索引
-    if total_frames >= _num_frames:
-        # 如果帧数足够，均匀提取
-        frame_indices = [int(total_frames * (i / (_num_frames + 1))) for i in range(1, _num_frames + 1)]
-        print("帧数足够，均匀提取")
-        print(frame_indices)
-    else:
-        # 如果帧数不足，按照规则复制帧
-        print("帧数不足，按照规则复制帧")
-        frame_counts = []
-
-        count = _num_frames // total_frames # 需要重复的次数
-        remaining = count * total_frames # 每帧重复 count 次后还需要重复的次数
-        remaining_frames_sep = total_frames // remaining
-        for i in range(total_frames):
-            if i % remaining_frames_sep == 0:
-                count += 1
-            frame_counts.append(count)
-            remaining -= 1
-            if remaining <= 0:
-                break
-
-        # 如果还有剩余的帧需要补充
-        if remaining < 0:
-            frame_counts[-1] += remaining
-
-        # 计算每个原帧需要被复制的次数
-        frame_indices = []
-        current_index = 0
-        for count in frame_counts:
-            frame_indices.extend([current_index] * count)
-            current_index += 1
-            if current_index >= total_frames:
-                current_index = 0  # 如果超出总帧数，回到第一个帧
-
-        # 确保总共有37帧
-        frame_indices = frame_indices[:_num_frames]
+    frame_indices = [int(total_frames * (i / (_num_frames + 1))) for i in range(1, _num_frames + 1)]
+    # 确保总共有37帧
+    frame_indices = frame_indices[:_num_frames]
 
     # 提取并处理帧
     print("Processing frames...")
@@ -225,6 +193,25 @@ def extract_frames(_video_path, _output_folder, _num_frames=36):
 
 # 使用
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="将视频或动图转换为 36 张图片")
+    parser.add_argument("-i", required=False, help="str 输入视频或动图文件的路径")
+    parser.add_argument("-s", required=False, help="float 截取视频的起始部分 (单位: 秒)")
+    parser.add_argument("-t", required=False, help="float 截取视频的结束部分 (单位: 秒)")
+    parser.add_argument("-r", required=False, help="int 旋转视频: 0 是不旋转，1 是顺时针 90 度，2 是逆时针 90 度")
+    parser.add_argument("-rr", required=False, help="int 额外连续转多次 (用于实现 180 度旋转)")
+    args = parser.parse_args()
+    if args.i is not None:
+        video_path = args.i
+        output_folder  = video_path + "_to_36_pictures"
+    if args.s is not None:
+        start_time = float(args.s)
+    if args.t is not None:
+        end_time = float(args.t)
+    if args.r is not None:
+        transpose = int(args.r)
+    if args.rr is not None:
+        rotate_time = int(args.rr)
+
     # 防止输出阻塞, 先删除同名文件
     if os.path.exists(temp_cut_video):
         os.remove(temp_cut_video)
@@ -247,6 +234,7 @@ if __name__ == '__main__':
     if start_time >= end_time:
         print("Start Time 配置错误")
         exit()
+
     output_file:str = cut_video_rotate(video_path, _start_time=start_time, _end_time=end_time, _width=width, _height=height)
 
     # 对截取放缩旋转后的视频进行帧提取
