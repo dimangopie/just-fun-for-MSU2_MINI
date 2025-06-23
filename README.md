@@ -22,15 +22,15 @@
 * **安装依赖** ：确保已安装 Python 环境和 FFMPEG 后，该工具无其他复杂依赖，可直接运行。
 * **运行方式** ：在命令行中，进入到包含 `1_video_to_36_pictures.py` 文件的目录，运行以下命令（假设已将 FFMPEG 添加到系统环境变量，且视频文件名为 example_video.mp4）：
 ```python 1_video_to_36_pictures.py -i example_video.mp4```
-
-* 如果未将 FFMPEG 添加到环境变量，则需要指定 FFMPEG 的完整路径来运行，例如：
-* 在1_video_to_36_pictures.py文件源码中修改以下配置项
+  
+* 如果未将 FFMPEG 添加到环境变量，则需要指定 FFMPEG 的完整路径来运行，在1_video_to_36_pictures.py文件源码中修改以下配置项
+*
 ```python
 ffmpeg_path = "ffmpeg"    # 默认FFMPEG路径
 ffprobe_path = "ffprobe"  # 默认ffprobe路径
 ```
 * **参数说明** ：
-    可以    
+    若不填写则以默认参数运行    
 
     | 参数         | 说明                                       |
     |------------|------------------------------------------|
