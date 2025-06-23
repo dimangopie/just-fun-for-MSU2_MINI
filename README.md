@@ -1,8 +1,8 @@
-# MSU2 MINI烧录工具魔改及图片制作工具
+# MSU2 MINI烧录工具微改及图片制作工具
 
 ## 项目简介
 
-该项目包含了对 MSU2 MINI 烧录工具源代码的魔改，以实现对 Linux 系统的兼容。同时，还提供了一个相关的 Python 小工具 `1_video_to_36_pictures.py`，用于制作烧录所需的图片，可以将几乎所有视频格式（包括 jpg、gif 等动图格式）转化为 36 张图片。
+该项目包含了对 MSU2 MINI 烧录工具源代码的微改，以实现对 Linux 系统的兼容。同时，还提供了一个相关的 Python 小工具 `1_video_to_36_pictures.py`，用于制作烧录所需的图片，可以将几乎所有视频格式（包括 jpg、gif 等动图格式）转化为 36 张图片。
 
 ## 环境要求
 * **FFMPEG** ：该项目中的 `1_video_to_36_pictures.py` 工具需要借助 FFMPEG 来处理视频。FFMPEG 是一个开源的多媒体处理工具。
@@ -13,9 +13,9 @@
 
 ## 工具使用
 
-### MSU2 MINI 烧录工具魔改版
+### MSU2 MINI 烧录工具微改版
 
-* 由于是魔改以兼容 Linux 系统，具体的使用方法与原版工具相同，按照指引进行烧录操作。
+* 由于是微改以兼容 Linux 系统，具体的使用方法与原版工具相同，按照指引进行烧录操作。
 
 ### 1_video_to_36_pictures.py 程序介绍
 
@@ -116,7 +116,7 @@ python 1_video_to_36_pictures.py
 
 ## 注意事项
 
-* 在Linux端使用魔改后的 MSU2 MINI 烧录工具时 
+* 在Linux端使用微改后的 MSU2 MINI 烧录工具时 
 权限如果不足的话需要
 ```bash
 sudo usermod -aG dialout $USER
