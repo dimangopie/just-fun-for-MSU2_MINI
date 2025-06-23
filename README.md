@@ -19,13 +19,13 @@
 
 ### 1_video_to_36_pictures.py 程序介绍
 
-* **安装依赖** ：确保已安装 Python 环境后，该工具无其他复杂依赖，可直接运行。
+* **安装依赖** ：确保已安装 Python 环境和 FFMPEG 后，该工具无其他复杂依赖，可直接运行。
 * **运行方式** ：在命令行中，进入到包含 `1_video_to_36_pictures.py` 文件的目录，运行以下命令（假设已将 FFMPEG 添加到系统环境变量，且视频文件名为 example_video.mp4）：
-```python 1_video_to_36_pictures.py --input example_video.mp4```
+```python 1_video_to_36_pictures.py -i example_video.mp4```
 
 * 如果未将 FFMPEG 添加到环境变量，则需要指定 FFMPEG 的完整路径来运行，例如：
 ```bash
-python 1_video_to_36_pictures.py --input example_video.mp4 --ffmpeg /path/to/your/ffmpeg
+python 1_video_to_36_pictures.py -i example_video.mp4
 ```
 * **参数说明** ：
     可以    
